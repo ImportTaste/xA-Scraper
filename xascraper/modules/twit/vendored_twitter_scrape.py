@@ -146,9 +146,9 @@ class TwitterFetcher(object):
 
 	def get_joined_date(self, user, twit_headers):
 
-		ctnt = self.stateful_get("https://twitter.com/{user}".format(user=user), headers=twit_headers)
+		ctnt = self.stateful_get("https://nitter.net/{user}".format(user=user), headers=twit_headers)
 		html = HTML(html=ctnt)
-		joined_items = html.find(".ProfileHeaderCard-joinDateText")
+		joined_items = html.find(".profile-joindate > span > div")
 		if not joined_items:
 			raise exceptions.AccountDisabledException("Could not retreive artist joined date. "
 				"This usually means the account has been disabled!")
@@ -156,7 +156,7 @@ class TwitterFetcher(object):
 		assert len(joined_items) == 1, "Too many joined items?"
 		joined = joined_items[0]
 
-		posttime = dateparser.parse(joined.attrs['title'])
+		posttime = dateparser.parse(joined.text.replace("Joined ",""))
 
 		self.log.info("User %s joined twitter at %s", user, posttime)
 
